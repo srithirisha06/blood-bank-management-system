@@ -1,0 +1,37 @@
+# Blood Bank MERN Project - .gitignore
+
+# Node modules
+node_modules/
+*/node_modules/
+
+# Environment files (NEVER commit!)
+.env
+server/.env
+client/.env
+
+# Build output
+client/dist/
+
+# Uploaded files
+server/uploads/*
+!server/uploads/.gitkeep
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Vite cache
+.vite/
+client/.vite/
