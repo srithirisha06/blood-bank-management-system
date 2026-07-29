@@ -27,6 +27,9 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
+// Trust Render's reverse proxy so req.ip and X-Forwarded-For work correctly.
+app.set('trust proxy', 1);
+
 // Security Headers
 app.use(helmet({ crossOriginResourcePolicy: false }));
 
@@ -52,6 +55,8 @@ if (process.env.NODE_ENV === 'development') {
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 mins
   max: 300,
+  standardHeaders: true,
+  legacyHeaders: false,
   message: { success: false, message: 'Too many requests from this IP, please try again later.' }
 });
 app.use('/api', limiter);
@@ -59,9 +64,39 @@ app.use('/api', limiter);
 // Uploads Static Directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Health Check API
+// Root health and API information endpoints for Render and browser access.
+app.get('/', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'Blood Bank Management API is running successfully.'
+  });
+});
+
 app.get('/api/health', (req, res) => {
   res.json({ success: true, status: 'Active', message: 'Blood Bank API Server is healthy' });
+});
+
+app.get('/api', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'Blood Bank Management API',
+    version: '1.0.0',
+    endpoints: {
+      health: '/api/health',
+      auth: '/api/auth',
+      users: '/api/users',
+      donors: '/api/donors',
+      hospitals: '/api/hospitals',
+      inventory: '/api/inventory',
+      donations: '/api/donations',
+      bloodTests: '/api/blood-tests',
+      requests: '/api/requests',
+      camps: '/api/camps',
+      dashboard: '/api/dashboard',
+      reports: '/api/reports',
+      notifications: '/api/notifications'
+    }
+  });
 });
 
 // API Routes
